@@ -97,7 +97,6 @@ MASTER_CURRENCY_DECLARATIONS = {
 def spendAmountProcessing(row, spend_col, live_rates_json=ECB_RATES_CACHE):
     
     raw_spend = row[spend_col]
-    print(raw_spend)
     if pd.isna(raw_spend):
         return None, "failed to extract (null)"
     if isinstance(raw_spend, str):
@@ -272,7 +271,6 @@ async def processExcellFile(file_object, user_currency):
 
             company_name = standardizeCompany(raw_company)
             raw_amount, currency_code = spendAmountProcessing(row, spend_col, ecb_rates)
-            print(f"{company_name} value retrun from the spend find {currency_code}")
             current_currency_rate = ecb_rates.get(currency_code)
       
             if (raw_amount == 0.0 and str(raw_spend).strip() not in ["0", "0.0"]) or raw_amount is None or current_currency_rate is None:
@@ -307,7 +305,6 @@ async def processExcellFile(file_object, user_currency):
     ]
 
     target_currencies = list(set([user_currency, "EUR", "USD"]))
-    print(user_currency)
     conversionMatrices = []
 
     for target in target_currencies:
