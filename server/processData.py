@@ -95,7 +95,6 @@ MASTER_CURRENCY_DECLARATIONS = {
 
 
 def spendAmountProcessing(row, spend_col, live_rates_json=ECB_RATES_CACHE):
-    
     raw_spend = row[spend_col]
     if pd.isna(raw_spend):
         return None, "failed to extract (null)"
@@ -111,10 +110,8 @@ def spendAmountProcessing(row, spend_col, live_rates_json=ECB_RATES_CACHE):
         cleaned_spend = float(raw_spend)
     if cleaned_spend < 0:
         return None, "failed to extract (negative value)"
-    
     val_str = str(raw_spend).upper().strip()
     numeric_string = "".join(c for c in val_str if c.isdigit() or c in [".", "-"])
-    
     try:
         if not numeric_string or numeric_string in [".", "-", ".-", "-."]:
             return None, "Invalid value"
@@ -139,22 +136,17 @@ def spendAmountProcessing(row, spend_col, live_rates_json=ECB_RATES_CACHE):
     return numeric_value, "No denomination was found"
 
 
-
 def findSpendColumn(df):
     if df is None or df.empty:
         return None
-        
     column_headers = list(df.columns)
     clean_headers = [str(h).strip() for h in column_headers]
-    
     currency_symbols = re.compile(r'[\$\€\£\¥\₩\₽\₹\₪]')
     currency_codes = re.compile(
     r'(?<=[\d.,\s])(USD|EUR|GBP|JPY|CAD|AUD|CHF|CNY|HKD|NZD)\b', re.IGNORECASE)
-    
     header_embeddings = model.encode(clean_headers, convert_to_numpy=True)
     similarity_matrix = cosine_similarity(header_embeddings, keyword_embeddings)
     scores = np.max(similarity_matrix, axis=1)
-
     for idx, col_name in enumerate(column_headers):
         header_has_currency = bool(currency_symbols.search(clean_headers[idx]) or currency_codes.search(clean_headers[idx]))
         if header_has_currency:
@@ -162,12 +154,9 @@ def findSpendColumn(df):
         column_data = df[col_name].dropna().head(20).astype(str).str.strip()
         if column_data.empty:
             continue
-
         currency_row_count = sum(bool(currency_symbols.search(row) or currency_codes.search(row)) for row in column_data)
-
         if currency_row_count / len(column_data) > 0.25:
             scores[idx] = 1.0
-
     best_match_idx = np.argmax(scores)
     if scores[best_match_idx] < 0.3:
         return None
@@ -189,16 +178,14 @@ def findVendorColumnByHeader(df, keyword_embeddings = recipient_embeddings):
     similarity_matrix = cosine_similarity(header_embeddings, keyword_embeddings)
     scores = np.max(similarity_matrix, axis=1)
     best_match_idx = np.argmax(scores)
-    print(scores)
     if scores[best_match_idx] < 0.3:
         return None
     return column_headers[best_match_idx], best_match_idx
 
+
 async def processExcellFile(file_object, user_currency):
-
     user_currency = str(user_currency).upper().strip()
-
-    if getattr(cache, "Renew", False):
+    if getattr(cache, "Renew", True):
         global ECB_RATES_CACHE
         ECB_RATES_CACHE = getCache()
         cache.Renew = False
