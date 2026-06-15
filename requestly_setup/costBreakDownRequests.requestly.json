@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "version": "1.1.0",
+    "exportedAt": "2026-06-15T06:21:27.147Z",
+    "exportedUsing": "Requestly API Client"
+  },
+  "records": [
+    {
+      "id": "041a8dcc-3bc0-4fef-9cf8-d7fc9fc8bd2b",
+      "name": "fuck you",
+      "description": "",
+      "type": "collection",
+      "parentId": null,
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": null
+    },
+    {
+      "id": "b3ded932-81ae-4a90-af5c-349d5ed6ac18",
+      "name": "file upload",
+      "type": "api",
+      "parentId": "041a8dcc-3bc0-4fef-9cf8-d7fc9fc8bd2b",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{url}}/files",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1781470619754006,
+              "key": "user-Currency",
+              "value": "JPY",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "multipart/form-data",
+            "formData": [
+              {
+                "id": 1781470519364003,
+                "key": "file",
+                "value": [
+                  {
+                    "type": "reference",
+                    "id": "FailurePoint_Test_File.xlsx-1781471870782",
+                    "name": "FailurePoint_Test_File.xlsx",
+                    "path": "C:\\Users\\phili\\PROJECTS\\CODING\\WHATEVERTHROWBULLSHITATIT\\trial_files\\FailurePoint_Test_File.xlsx",
+                    "size": 12737,
+                    "source": "desktop"
+                  }
+                ],
+                "isEnabled": true,
+                "type": "file"
+              }
+            ]
+          },
+          "contentType": "none"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Status code is 200\", () => {\n  rq.response.to.have.status(200);\n});\n\nrq.test(\"Request method is POST\", () => {\n  rq.expect(rq.request.method).to.equal(\"POST\");\n});\n\nrq.test(\"Response has valid JSON body\", () => {\n  rq.response.to.have.jsonBody();\n});\n\nrq.test(\"Response body is JSON object\", () => {\n  const parsed = JSON.parse(rq.response.body);\n  rq.expect(parsed).to.be.an(\"object\").and.not.to.be.an(\"array\");\n});\n"
+        }
+      },
+      "rank": "ap"
+    }
+  ],
+  "environments": [],
+  "packages": []
+}

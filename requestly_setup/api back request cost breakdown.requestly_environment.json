@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "version": "1.1.0",
+    "exportedAt": "2026-06-15T06:21:14.773Z",
+    "exportedUsing": "Requestly API Client"
+  },
+  "environments": [
+    {
+      "id": "1f1b9908-3e4a-42f9-a732-49c492bb13ab",
+      "name": "api back request cost breakdown",
+      "isGlobal": false,
+      "variables": {
+        "url": {
+          "id": "3a828ab3-34f9-45fe-a9dc-cb522e579096",
+          "syncValue": "http://127.0.0.1:8000",
+          "type": "string",
+          "isEnabled": true,
+          "isPersisted": true,
+          "rank": "a0",
+          "createdAt": "2026-06-15T06:20:43.606Z",
+          "updatedAt": "2026-06-15T06:20:43.606Z",
+          "createdBy": null,
+          "updatedBy": null
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+Direct dependency license summary for this repository
+
+This project is uploaded to GitHub and uses the following Python packages
+as direct imports in the source code. The licenses listed below apply to
+those dependencies; the repository code itself is not being licensed here.
+
+Direct imports and licenses:
+
+- fastapi==0.136.1 — MIT License
+- numpy==2.4.6 — BSD-3-Clause, 0BSD, MIT, Zlib, and CC0-1.0 (multi-license)
+- openpyxl==3.1.5 — MIT License
+- pandas==3.0.3 — BSD 3-Clause License
+- pydantic==2.13.4 — MIT License
+- requests==2.34.2 — Apache License 2.0
+- scikit-learn==1.8.0 — BSD-3-Clause License
+- sentence-transformers==5.5.1 — Apache License 2.0
+- watchdog==6.0.0 — Apache License 2.0
+
+If you need the full license texts, consult the source distributions or the
+packages' official repositories:
+
+- FastAPI: https://github.com/fastapi/fastapi
+- NumPy: https://numpy.org
+- openpyxl: https://openpyxl.readthedocs.io
+- pandas: https://pandas.pydata.org
+- Pydantic: https://github.com/pydantic/pydantic
+- Requests: https://github.com/psf/requests
+- scikit-learn: https://scikit-learn.org
+- Sentence Transformers: https://github.com/UKPLab/sentence-transformers
+- Watchdog: https://github.com/gorakhargosh/watchdog
