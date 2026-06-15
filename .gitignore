@@ -27,9 +27,9 @@
 pytest.py
 /venv/
 /exchange_data/
-/*.cfg
+*.cfg
 *.vscode
 /public
 *Dockerfile
 *.dockerignore
-*/server/__pycache__
+/server/__pycache__
