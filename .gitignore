@@ -31,4 +31,4 @@ pytest.py
 /public
 *Dockerfile
 *.dockerignore
-/server/__pycache__
+__pycache__/
