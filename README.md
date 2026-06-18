@@ -38,10 +38,10 @@ The backed API endpoint takes the excel files , and using pandas and a sequence 
 		    }
 		},
 		"file_batch_data":{				#Data returned per file the user has uploaded 
-				"Test_File.xlsx":{   #The file name to define which data belongs to which
+				"Test_File.xlsx":{   #The file name as a key to define which data belongs to which
 				"file_status": "success",		#Indicates if anything went wrong
 				"failed_rows_count": 0,    	#How much data was unable to be read + returns a report of what failed if it failed
-				"expense_data": [             #The array containing all the objects with the name and spend
+				"expense_data": [            #The array containing all the objects with the name and spend
 					{
 						"company": "SomeName.Inc",
 						"value": 22.14
