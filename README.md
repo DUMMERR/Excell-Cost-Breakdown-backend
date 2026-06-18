@@ -37,9 +37,8 @@ The backed API endpoint takes the excel files , and using pandas and a sequence 
 		      "rate_against_eur": 1.1567,
 		    }
 		},
-		"file_batch_data":[  					#Data returned per file the user has uploaded 
-			{
-				"filename": "Test_File.xlsx",   #The file name to define which data belongs to which
+		"file_batch_data":{				#Data returned per file the user has uploaded 
+				"Test_File.xlsx":{   #The file name to define which data belongs to which
 				"file_status": "success",		#Indicates if anything went wrong
 				"failed_rows_count": 0,    	#How much data was unable to be read + returns a report of what failed if it failed
 				"expense_data": [             #The array containing all the objects with the name and spend
@@ -57,7 +56,7 @@ The backed API endpoint takes the excel files , and using pandas and a sequence 
 					}
 				]
 			}
-		]
+		}
 	}
 ```
 
