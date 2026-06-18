@@ -95,6 +95,7 @@ MASTER_CURRENCY_DECLARATIONS = {
 
 
 def spendAmountProcessing(row, spend_col, live_rates_json=ECB_RATES_CACHE):
+    
     raw_spend = row[spend_col]
     if pd.isna(raw_spend):
         return None, "failed to extract (null)"
@@ -110,8 +111,10 @@ def spendAmountProcessing(row, spend_col, live_rates_json=ECB_RATES_CACHE):
         cleaned_spend = float(raw_spend)
     if cleaned_spend < 0:
         return None, "failed to extract (negative value)"
+    
     val_str = str(raw_spend).upper().strip()
     numeric_string = "".join(c for c in val_str if c.isdigit() or c in [".", "-"])
+    
     try:
         if not numeric_string or numeric_string in [".", "-", ".-", "-."]:
             return None, "Invalid value"
@@ -136,17 +139,22 @@ def spendAmountProcessing(row, spend_col, live_rates_json=ECB_RATES_CACHE):
     return numeric_value, "No denomination was found"
 
 
+
 def findSpendColumn(df):
     if df is None or df.empty:
         return None
+        
     column_headers = list(df.columns)
     clean_headers = [str(h).strip() for h in column_headers]
+    
     currency_symbols = re.compile(r'[\$\€\£\¥\₩\₽\₹\₪]')
     currency_codes = re.compile(
     r'(?<=[\d.,\s])(USD|EUR|GBP|JPY|CAD|AUD|CHF|CNY|HKD|NZD)\b', re.IGNORECASE)
+    
     header_embeddings = model.encode(clean_headers, convert_to_numpy=True)
     similarity_matrix = cosine_similarity(header_embeddings, keyword_embeddings)
     scores = np.max(similarity_matrix, axis=1)
+
     for idx, col_name in enumerate(column_headers):
         header_has_currency = bool(currency_symbols.search(clean_headers[idx]) or currency_codes.search(clean_headers[idx]))
         if header_has_currency:
@@ -154,13 +162,16 @@ def findSpendColumn(df):
         column_data = df[col_name].dropna().head(20).astype(str).str.strip()
         if column_data.empty:
             continue
+
         currency_row_count = sum(bool(currency_symbols.search(row) or currency_codes.search(row)) for row in column_data)
+
         if currency_row_count / len(column_data) > 0.25:
             scores[idx] = 1.0
+
     best_match_idx = np.argmax(scores)
     if scores[best_match_idx] < 0.3:
         return None
-    return column_headers[best_match_idx], best_match_idx
+    return column_headers[best_match_idx]
 
 
 def standardizeCompany(raw_name):
@@ -180,12 +191,13 @@ def findVendorColumnByHeader(df, keyword_embeddings = recipient_embeddings):
     best_match_idx = np.argmax(scores)
     if scores[best_match_idx] < 0.3:
         return None
-    return column_headers[best_match_idx], best_match_idx
+    return column_headers[best_match_idx]
 
+async def processExcelFile(file_object, user_currency):
 
-async def processExcellFile(file_object, user_currency):
     user_currency = str(user_currency).upper().strip()
-    if getattr(cache, "Renew", True):
+
+    if getattr(cache, "Renew", False):
         global ECB_RATES_CACHE
         ECB_RATES_CACHE = getCache()
         cache.Renew = False
@@ -194,10 +206,9 @@ async def processExcellFile(file_object, user_currency):
   
         if not ECB_RATES_CACHE or len(ECB_RATES_CACHE) <= 1:
             ECB_RATES_CACHE = getCache()
-            print("attempt 1")
         if ECB_RATES_CACHE is None:
             ECB_RATES_CACHE = await read_cached_data()
-            print("attempt 2")
+
         if ECB_RATES_CACHE is None:
             raise ValueError("The 'ecb' cache source could not be resolved.")
         ecb_rates = dict(ECB_RATES_CACHE)
@@ -226,12 +237,12 @@ async def processExcellFile(file_object, user_currency):
             "error": "Internal Error: Spend or cost column could not be detected automatically."
         }
   
-    spend_col, spend_idx = spend_result
+    spend_col = spend_result
     vendor_result = findVendorColumnByHeader(df, recipient_embeddings)
-    if vendor_result and isinstance(vendor_result, tuple):
-        company_col, company_idx = vendor_result
+    if vendor_result and isinstance(vendor_result, str):
+        company_col = vendor_result
     else:
-        company_col, company_idx = None, None
+        company_col = None
     if not company_col or company_col == spend_col:
         column_list = df.columns.to_list()
         remaining_cols = [c for c in column_list if c != spend_col]
@@ -277,8 +288,7 @@ async def processExcellFile(file_object, user_currency):
                 })
                 continue 
             normalized_eur_value = float(raw_amount) / float(current_currency_rate)
-            data_key = (company_name, currency_code)
-            summary_data[data_key] = summary_data.get(data_key, 0.0) + normalized_eur_value
+            summary_data[company_name] = summary_data.get(company_name, 0.0) + normalized_eur_value
 
         except Exception as row_error:
             failed_rows.append({
@@ -287,23 +297,27 @@ async def processExcellFile(file_object, user_currency):
             })
 
     flat_expense_list = [
-        {"company": comp,"og-currency":curr, "normalized_value_eur": round(total_spend, 2)} 
-        for (comp,curr), total_spend in summary_data.items()
+        {"company": comp, "value": round(total_spend, 2)} 
+        for comp, total_spend in summary_data.items()
     ]
 
     target_currencies = list(set([user_currency, "EUR", "USD"]))
-    conversionMatrices = []
+    conversionMatrices = {}
 
     for target in target_currencies:
         target_rate = ecb_rates.get(target, 1.0)
-        conversionMatrices.append({
-            "currency_code": target,
+        conversionMatrices[target] = {
             "rate_against_eur": round(target_rate, 4),
-            "is_user_default": target == user_currency
-        })
-
+             **({"is_user_default": True} if target == user_currency else {})
+        }
+    if not failed_rows: 
+        status = "success"  
+    elif not flat_expense_list:
+        status = "error"
+    else:
+        status = "partial_success"
     return {
-        "status": "success" if not failed_rows else "partial_success",
+        "status": status,
         "exchange_rates": ecb_rates,
         "conversionMatrices": conversionMatrices, 
         "fileObjData": flat_expense_list,
