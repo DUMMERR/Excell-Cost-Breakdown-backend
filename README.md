@@ -24,24 +24,25 @@ The backed API endpoint takes the excel files , and using pandas and a sequence 
 **Example of a returned Json obj:**
 ```json
 	{
-		"normalization_base": "EUR",      		#All data is normalised to euro for conversions
-		"conversion_matrices":{		  			#Returns a conversion matrice , details bellow
-			"EUR": {							#Currency code as a key for conversion rates
+		"normalization_base": "EUR",      		//All data is normalised to euro for conversions
+		"conversion_matrices":{		  		//Returns a conversion matrice , details bellow
+			"EUR": {							//Currency code as a key for conversion rates
 		      "rate_against_eur": 1,
 		    },
 		    "JPY": {
 		      "rate_against_eur": 185.3,
-		      "is_user_default": true			#Can be used to show the values in the selected Currency
+		      "is_user_default": true			//Can be used to show the values in the selected Currency
 		    },
 		    "USD": {
 		      "rate_against_eur": 1.1567,
 		    }
 		},
-		"file_batch_data":{				#Data returned per file the user has uploaded 
-				"Test_File.xlsx":{   #The file name as a key to define which data belongs to which
-				"file_status": "success",		#Indicates if anything went wrong
-				"failed_rows_count": 0,    	#How much data was unable to be read + returns a report of what failed if it failed
-				"expense_data": [            #The array containing all the objects with the name and spend
+		"file_batch_data":{				//Data returned per file the user has uploaded 
+				"Test_File.xlsx":{   //The file name as a key to define which data belongs to which
+				"file_status": "success",		//Indicates if anything went wrong
+				"failed_rows_count": 0,    	//How many rows failed to read
+				"failed_rows_details":[], //returns an array of what row failed and why
+				"expense_data": [            //The array containing all the objects with the name and spend
 					{
 						"company": "SomeName.Inc",
 						"value": 22.14
