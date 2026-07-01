@@ -60,7 +60,7 @@ async def create_file(
     user_currency = str(x_user_currency).upper().strip()
     processing_result = None
     
-    separate_files_response = {}
+    separate_files_response = []
     for currentFile in file:
         file_extension = distinguishFileENd(currentFile.filename)
         file_bytes = await currentFile.read()
@@ -72,12 +72,13 @@ async def create_file(
         failed_count = processing_result.get("failedRowCount")
         failed_count = failed_count if isinstance(failed_count, int) else 0
         
-        separate_files_response[currentFile.filename]= {
+        separate_files_response.append ({
+            "file_name":currentFile.filename,
             "file_status": processing_result.get("status", "failed"),
             "failed_rows_count": processing_result.get("failedRowCount", 0),
              "failed_rows_details": processing_result.get("failedRowDetails") if failed_count > 0 else [] ,
             "expense_data": expense_list if isinstance(expense_list, list) else []
-        }
+        })
     
     return {
         "normalization_base": "EUR",

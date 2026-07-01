@@ -308,7 +308,7 @@ async def processExcelFile(file_object, user_currency):
         target_rate = ecb_rates.get(target, 1.0)
         conversionMatrices[target] = {
             "rate_against_eur": round(target_rate, 4),
-             **({"is_user_default": True} if target == user_currency else {})
+             "is_user_default": True if target == user_currency else False
         }
     if not failed_rows: 
         status = "success"  
