@@ -39,7 +39,7 @@ The backed API endpoint takes the excel files , and using pandas and a sequence 
 		},
 		"file_batch_data":[			//Data returned per file the user has uploaded each one as an object
 				{
-      "file_name": "Test_File.xlsx",   //The file name 
+      			"file_name": "Test_File.xlsx",   //The file name 
 				"file_status": "success",		//Indicates if anything went wrong
 				"failed_rows_count": 0,    	//How many rows failed to read
 				"failed_rows_details":[], //returns an array of what row failed and why
