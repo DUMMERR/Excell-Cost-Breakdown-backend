@@ -75,7 +75,7 @@ async def create_file(
         separate_files_response[currentFile.filename]= {
             "file_status": processing_result.get("status", "failed"),
             "failed_rows_count": processing_result.get("failedRowCount", 0),
-             **({"failed_rows_details": processing_result.get("failedRowDetails")} if failed_count > 0 else {} ),
+             "failed_rows_details": processing_result.get("failedRowDetails") if failed_count > 0 else {} ,
             "expense_data": expense_list if isinstance(expense_list, list) else []
         }
     

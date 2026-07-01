@@ -254,9 +254,9 @@ async def processExcelFile(file_object, user_currency):
     if user_currency not in ecb_rates:
         ecb_rates[user_currency] = 1.0  
 
-    for index, row in df.iterrows():
-        excel_row_number = index + 2 
-        
+    for index in df.index:
+        excel_row_number = index+2
+        row = df.loc[index]
         try:
             raw_company = row.get(company_col)
             raw_spend = row.get(spend_col)
